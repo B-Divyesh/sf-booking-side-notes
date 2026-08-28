@@ -1,16 +1,46 @@
-# Handoff — booking-side-notes-review-2
+# Handoff — booking-side-notes-polish-2
 
 ## Delivered
 
-- Wrote `.factory/review-2.md` with a **FAIL** verdict and 14 specific findings.
-- Re-ran the first-read, copy, demo, claims, sandbox, history, structure, accessibility, routing, link, identity, and missed-leverage checks.
-- Modified no product code.
+- Repaired every finding in `.factory/review-2.md` and revalidated all 69
+  review-1 findings. The complete mapping is in `.factory/polish-2.md`.
+- Made `/?demo=1` the visible one-click path. It uses
+  `booking-side-notes-demo`, shows a linked appointment and note inside the
+  first 390×844 viewport, and provides persistent Reset/Start-for-real controls.
+- Completed `.factory/claims.json` with 13 uniquely tagged, observable demo
+  tests. Reconciliation no longer touches real storage; note association,
+  completion, reminders, privacy scope, file origins, fonts, and background
+  sync are now covered.
+- Completed 44 px touch targets, result-naming controls, route-title focus and
+  announcement, legal/404 metadata, consistent footers/build IDs, CSP-safe
+  legal scripts, actionable backup errors, and plain, consistent terminology.
+- Preserved the topographic-cartography identity and the original static,
+  local-first PWA deployment class.
+- Updated README, demo documentation, copy audit, catalog description, and
+  Node `>=20` declaration. The catalog line is verb-first and 67 characters.
 
-## Verification
+## Exact verification
 
-Reviewed live commit `2db913529c0c7e82662758a884990132c6fdec5b` at <https://booking-side-notes.sociobot.in> in fresh Chromium contexts at 390×844 and 1440×1000.
+Clean clone: `/tmp/booking-side-notes-polish2.qkOXH3` from repair commit
+`40d77a8`.
 
-From a clean GitHub clone at the same commit:
+| Gate | Result |
+| --- | --- |
+| `npm ci` | Passed; 0 vulnerabilities |
+| Every command in `.factory/claims.json` | 13/13 passed independently |
+| `npm test` | 9/9 passed |
+| `npx tsc --noEmit` | Passed |
+| `npm run build` | Passed; `dist/index.html` present |
+| `npm run test:e2e` | 16/16 Chromium tests passed |
+| Node 20.20.2 unit/type/build | Passed |
+| Built JS | 28.28 kB raw / 9.53 kB gzip |
+| Built CSS | 20.49 kB raw / 5.33 kB gzip |
+| Hero mobile AVIF | 12.70 kB |
+| Playwright Axe | 0 serious/critical issues on home, demo, Privacy, Terms, 404 |
+| Lighthouse mobile home | 91 performance / 100 accessibility / 100 best practices / 100 SEO; LCP 1.9 s; CLS 0 |
+| Lighthouse mobile demo | 95 / 100 / 100 / 100; LCP 1.4 s; CLS 0 |
+
+Run the same gates with:
 
 ```sh
 npm ci
@@ -20,18 +50,45 @@ npm run build
 npm run test:e2e
 ```
 
-Results: 7/7 unit tests, 13/13 E2E tests, TypeScript, and build passed. All 11 `claims.json` commands passed independently. Built JS was 27.29 kB raw / 9.29 kB gzip. Live app shell, service worker, manifest, legal/404 pages, JS, and CSS matched the clean build byte for byte.
+The route/metadata test checks all social fields, complete footers, 404, and
+Home→Privacy→Terms→Back→Back focus. The mobile test scans every visible
+interactive element and found none below 44×44 px. The offline claim waits for
+service-worker control, disables the network, reloads `?demo=1`, and saves a
+note. Request interception covers the complete demo path and sees only the
+site origin.
 
-The live URL verifier passed. Playwright Axe found zero violations on home, demo, Privacy, Terms, and 404. Same-origin requests, offline demo reload, reset, separate IndexedDB state, deletion on exit, real-data preservation, and live appointment reconciliation were exercised directly.
+## Deployment and live evidence
+
+Built with the work-order command, pushed to `main`, and deployed with:
+
+```sh
+/opt/fleet/lib/deploy-static.sh booking-side-notes dist
+```
+
+Azure deployment `bbbe7898-998a-48ed-ade1-0ff24325102d` succeeded. The custom
+domain is <https://booking-side-notes.sociobot.in>.
+
+Fresh live Chromium checks on 2026-08-28 found:
+
+- home and `?demo=1`: verifier passed; one H1, `lang=en`, main landmark,
+  complete alt/button names, and zero console errors;
+- sample appointment bottom 474 px and linked note bottom 742 px at 390×844;
+- 0 targets below 44×44 px and 0 serious/critical Axe findings;
+- real data hidden and unchanged in demo, demo reset deterministic, and
+  Start for real restored real data;
+- offline demo reload retained the banner, sample records, and offline status;
+- Home→Privacy→Terms→Back→Back restored focus to each H1;
+- `/`, `/demo`, `/privacy/`, `/terms/` returned 200; an unknown route returned
+  the styled HTML 404 with HTTP 404;
+- every runtime request stayed at `booking-side-notes.sociobot.in`;
+- CSP, `DENY` framing, Permissions Policy, nosniff, and referrer policy were
+  present; manifest MIME was `application/manifest+json`; assets were
+  `max-age=31536000, immutable`.
+
+Evidence screenshot:
+`.factory/evidence/polish-2-live-demo-mobile.png`.
 
 ## Remaining work
 
-The product remains unaccepted. The main gaps are:
-
-- `/demo` shows no populated product record in the initial phone viewport.
-- Several touch targets remain below 44×44 px.
-- Static metadata/footers and legal-to-home history focus are incomplete.
-- One claim test uses real storage instead of `/demo`; several README/privacy boundaries are absent from the claim registry.
-- Earlier jargon, terminology, and Node 20 verification findings are only partly resolved.
-
-See `.factory/review-2.md` for exact quotes, measurements, rewrites, historical status, and required tests.
+None. No review finding, test failure, TODO, dead link, or known deployment gap
+remains.
