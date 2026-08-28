@@ -10,5 +10,7 @@ deletes the demo database and opens the ordinary workspace.
 Demo state is stored only in IndexedDB database `booking-side-notes-demo`, store
 `local-data`, key `demo:state-v1`. Real state uses the separate
 `booking-side-notes` database and `state-v1` key. Demo never reads or writes the
-real database. The service worker precaches `/demo`, so the sample is available
-offline after the first visit.
+real database. The wordmark, browser Back or Forward to a non-demo page,
+Privacy, Terms, and Start for real clear the demo database before the next page
+loads. Returning to `/demo` starts the original sample again. The service worker
+precaches `/demo`, so the sample is available offline after the first visit.

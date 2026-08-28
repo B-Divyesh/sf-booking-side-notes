@@ -77,8 +77,9 @@ Update, Edit, Delete, Cancel, and Close labels identify their result.
 
 All prose sentences are 22 words or fewer. The former terms
 “appointment-linked,” “day-level,” “JSON backup,” “runtime CDN dependencies,”
-and “manifest MIME type” are absent. The README uses “for one appointment or
-the whole day,” “backup file,” “loads no third-party files,” and “app manifest.”
+“manifest MIME type,” and “appointment instances” are absent. The README uses
+“for one appointment or the whole day,” “backup file,” “loads no third-party
+files,” “app manifest,” and “each appointment you need.”
 
 ## Terminology
 

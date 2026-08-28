@@ -39,7 +39,7 @@ async function goDemo(page: import('@playwright/test').Page) {
   await expect(page.getByRole('heading', { name: 'Harbour House boiler visit' })).toBeVisible();
 }
 
-test('@claim:demo-isolated demo stays visibly marked, resets sample data, and never changes real data', async ({ page }) => {
+test('@claim:demo-isolated demo stays visibly marked, discards every exit path, and never changes real data', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.locator('#add-note').click();
@@ -87,9 +87,65 @@ test('@claim:demo-isolated demo stays visibly marked, resets sample data, and ne
   expect(realDataDuringDemo).toEqual(realDataBeforeDemo);
   await page.getByRole('button', { name: 'Reset demo' }).click();
   await expect(page.getByText('DEMO ONLY NOTE')).toHaveCount(0);
+  await page.locator('#add-note').click();
+  await page.locator('#note-text').fill('WORDMARK EXIT NOTE');
+  await page.getByRole('button', { name: 'Save side note' }).click();
+  await page.getByRole('link', { name: 'Booking Side Notes' }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator('.note-body > p').filter({ hasText: 'REAL CUSTOMER NOTE' })).toBeVisible();
+  await expect(page.getByText('WORDMARK EXIT NOTE')).toHaveCount(0);
+  expect(await page.evaluate(async () => new Promise((resolve, reject) => {
+    const request = indexedDB.open('booking-side-notes');
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const read = db.transaction('local-data').objectStore('local-data').get('state-v1');
+      read.onerror = () => reject(read.error);
+      read.onsuccess = () => { resolve(read.result); db.close(); };
+    };
+  }))).toEqual(realDataBeforeDemo);
+
+  await goDemo(page);
+  await expect(page.getByText('WORDMARK EXIT NOTE')).toHaveCount(0);
+  await expect(page.locator('.note-card')).toHaveCount(3);
+  await page.locator('#add-note').click();
+  await page.locator('#note-text').fill('BACK EXIT NOTE');
+  await page.getByRole('button', { name: 'Save side note' }).click();
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator('.note-body > p').filter({ hasText: 'REAL CUSTOMER NOTE' })).toBeVisible();
+  await page.goForward();
+  await expect(page).toHaveURL(/\?demo=1$/);
+  await expect(page.getByText('BACK EXIT NOTE')).toHaveCount(0);
+  await expect(page.locator('.note-card')).toHaveCount(3);
+
+  await page.locator('#add-note').click();
+  await page.locator('#note-text').fill('PRIVACY EXIT NOTE');
+  await page.getByRole('button', { name: 'Save side note' }).click();
+  await page.getByRole('link', { name: 'Privacy' }).first().click();
+  await expect(page).toHaveTitle('Privacy — Booking Side Notes');
+  await goDemo(page);
+  await expect(page.getByText('PRIVACY EXIT NOTE')).toHaveCount(0);
+
+  await page.locator('#add-note').click();
+  await page.locator('#note-text').fill('TERMS EXIT NOTE');
+  await page.getByRole('button', { name: 'Save side note' }).click();
+  await page.getByRole('link', { name: 'Terms' }).first().click();
+  await expect(page).toHaveTitle('Terms — Booking Side Notes');
+  await goDemo(page);
+  await expect(page.getByText('TERMS EXIT NOTE')).toHaveCount(0);
   await page.getByRole('button', { name: 'Start for real' }).click();
   await expect(page.locator('.note-body > p').filter({ hasText: 'REAL CUSTOMER NOTE' })).toBeVisible();
-  await expect(page.getByText('DEMO ONLY NOTE')).toHaveCount(0);
+  expect(await page.evaluate(async () => new Promise((resolve, reject) => {
+    const request = indexedDB.open('booking-side-notes');
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const read = db.transaction('local-data').objectStore('local-data').get('state-v1');
+      read.onerror = () => reject(read.error);
+      read.onsuccess = () => { resolve(read.result); db.close(); };
+    };
+  }))).toEqual(realDataBeforeDemo);
 });
 
 test('@claim:local-no-upload demo actions request only this site', async ({ page }) => {

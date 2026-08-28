@@ -50,4 +50,12 @@ describe('static deployment contract', () => {
     const app = await readFile('src/main.ts', 'utf8');
     expect(app).not.toContain('Private appointment companion');
   });
+
+  it('keeps demo-exit and calendar guidance direct in the implementation and README', async () => {
+    const app = await readFile('src/main.ts', 'utf8');
+    const readme = await readFile('README.md', 'utf8');
+    expect(app).toContain('discardDemoBeforeExit');
+    expect(readme).toContain('Export each appointment you need from your calendar.');
+    expect(readme).not.toContain('appointment instances');
+  });
 });

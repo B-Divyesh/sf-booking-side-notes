@@ -4,7 +4,7 @@ Keep side notes beside appointments without changing bookable time.
 
 Booking Side Notes is for small appointment businesses. Import an `.ics` calendar file. Keep callbacks, access details, delays, and follow-ups beside each appointment.
 
-Try it immediately at [the sample demo](https://booking-side-notes.sociobot.in/?demo=1). The demo uses separate local storage and resets to its original sample.
+Try it immediately at [the sample demo](https://booking-side-notes.sociobot.in/?demo=1). The demo uses separate local storage. Leaving it or choosing Reset demo restores the original sample.
 
 ## What it does
 
@@ -43,7 +43,7 @@ Deploy the contents of `dist/` to an HTTPS static host. `staticwebapp.config.jso
 
 ## Boundaries
 
-Side notes do not change appointments or bookable time. The app does not send notifications. Export the appointment instances you need from your calendar. Browser storage can be cleared, so export a backup regularly.
+Side notes do not change appointments or bookable time. The app does not send notifications. Export each appointment you need from your calendar. Browser storage can be cleared, so export a backup regularly.
 
 See [Privacy](https://booking-side-notes.sociobot.in/privacy/) and [Terms](https://booking-side-notes.sociobot.in/terms/). Design rationale and asset provenance are in [`.factory/design.md`](.factory/design.md).
 

@@ -19,14 +19,20 @@ let storageMode: StorageMode = 'real';
 let editingId: string | null = null;
 let pendingMessage = '';
 let updatingApp = false;
+const DEMO_EXIT_KEY = 'booking-side-notes:discard-demo-on-exit';
 
-function currentRoute(): 'home' | 'demo' | 'not-found' {
-  const path = location.pathname.replace(/\/+$/, '') || '/';
-  if (path === '/' && new URL(location.href).searchParams.get('demo') === '1') return 'demo';
+type AppRoute = 'home' | 'demo' | 'not-found';
+
+function routeForUrl(url: URL): AppRoute {
+  const path = url.pathname.replace(/\/+$/, '') || '/';
+  if (path === '/' && url.searchParams.get('demo') === '1') return 'demo';
   if (path === '/') return 'home';
   if (path === '/demo') return 'demo';
   return 'not-found';
 }
+
+function currentRoute(): AppRoute { return routeForUrl(new URL(location.href)); }
+function isStaticDocument(url: URL): boolean { return ['/privacy', '/terms'].includes(url.pathname.replace(/\/+$/, '') || '/'); }
 
 function sampleData(): AppData {
   return { version: 1, events: [
@@ -64,10 +70,10 @@ function noteMarkup(note: SideNote, index: number): string {
   return `<li class="note-card ${note.completed ? 'is-complete' : ''}"><label class="check-wrap"><input class="note-check" data-note-id="${note.id}" type="checkbox" ${note.completed ? 'checked' : ''}><span class="custom-check" aria-hidden="true"></span><span class="sr-only">Mark “${esc(note.text)}” ${note.completed ? 'not done' : 'done'}</span></label><span class="map-pin" aria-hidden="true"><span>${index + 1}</span></span><div class="note-body"><div class="note-meta"><span>${esc(note.anchorTime || 'Any time')}</span><span>${association}</span>${reminder ? `<span class="reminder-state status-${note.reminder}">${reminder}</span><button class="reminder-status" data-reminder-id="${note.id}">${reminderAction}</button>` : ''}</div><p>${esc(note.text)}</p><span class="completion-label">${note.completed ? 'Done' : 'Open'}</span></div><div class="note-actions"><button class="icon-button edit-note" data-note-id="${note.id}" aria-label="Edit ${esc(note.text)}">✎</button><button class="icon-button delete-note" data-note-id="${note.id}" aria-label="Delete ${esc(note.text)}">×</button></div></li>`;
 }
 
-function header(): string { return `<header class="site-header"><a class="brand" href="/" data-route="/"><img src="/assets/app-mark.svg" width="40" height="40" alt=""><span>Booking Side Notes</span></a><nav class="site-nav" aria-label="Main navigation"><a href="/?demo=1" data-route="/?demo=1">Try demo</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav><span id="network-state" class="network-state"><span aria-hidden="true">●</span> ${navigator.onLine ? 'On device' : 'Offline · on device'}</span></header>`; }
-function footer(): string { return `<footer><span>Side notes beside appointments, on this device.</span><nav aria-label="Footer"><a href="/demo" data-route="/demo">Demo</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav><span>Built by Param Factory · build ${__BUILD_ID__}</span></footer>`; }
+function header(): string { return `<header class="site-header"><a class="brand" href="/" data-route="/"><img src="/assets/app-mark.svg" width="40" height="40" alt=""><span>Booking Side Notes</span></a><nav class="site-nav" aria-label="Main navigation"><a href="/?demo=1" data-route="/?demo=1">Try demo</a><a href="/privacy/" data-route="/privacy/">Privacy</a><a href="/terms/" data-route="/terms/">Terms</a></nav><span id="network-state" class="network-state"><span aria-hidden="true">●</span> ${navigator.onLine ? 'On device' : 'Offline · on device'}</span></header>`; }
+function footer(): string { return `<footer><span>Side notes beside appointments, on this device.</span><nav aria-label="Footer"><a href="/demo" data-route="/demo">Demo</a><a href="/privacy/" data-route="/privacy/">Privacy</a><a href="/terms/" data-route="/terms/">Terms</a></nav><span>Built by Param Factory · build ${__BUILD_ID__}</span></footer>`; }
 function focusTitle(): void { requestAnimationFrame(() => { const heading = document.querySelector<HTMLElement>('#page-title'); heading?.focus(); const announcer = document.querySelector('#route-announcer'); if (announcer) announcer.textContent = heading?.textContent || ''; }); }
-function bindRoutes(): void { document.querySelectorAll<HTMLAnchorElement>('[data-route]').forEach((link) => link.addEventListener('click', (event) => { event.preventDefault(); void navigate(link.dataset.route || '/'); })); }
+function bindRoutes(): void { document.querySelectorAll<HTMLAnchorElement>('[data-route]').forEach((link) => link.addEventListener('click', (event) => { if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); void navigate(link.dataset.route || '/'); })); }
 
 function renderNotFound(): void {
   app.innerHTML = `${header()}<main id="main" class="fatal"><p class="eyebrow">Map reference missing</p><h1 id="page-title" tabindex="-1">This page was not found</h1><p>Check the address, or return to your appointments.</p><a class="button primary" href="/" data-route="/">Go to Booking Side Notes</a></main>${footer()}<div id="route-announcer" class="sr-only" aria-live="polite"></div>`;
@@ -97,7 +103,38 @@ function openEditor(eventId?: string, note?: SideNote): void { editingId = note?
 async function saveNote(event: SubmitEvent): Promise<void> { event.preventDefault(); if (event.submitter instanceof HTMLButtonElement && event.submitter.value === 'cancel') { document.querySelector<HTMLDialogElement>('#note-dialog')!.close(); return; } const text = document.querySelector<HTMLTextAreaElement>('#note-text')!.value.trim(); if (!text) return; const old = data.notes.find((note) => note.id === editingId); const note: SideNote = { id: old?.id ?? uid(), date: selectedDate, eventId: document.querySelector<HTMLSelectElement>('#note-event')!.value || undefined, anchorTime: document.querySelector<HTMLInputElement>('#note-time')!.value || undefined, text, completed: old?.completed ?? false, reminder: document.querySelector<HTMLInputElement>('#note-reminder')!.checked ? 'due' : 'none', updatedAt: new Date().toISOString() }; data.notes = old ? data.notes.map((item) => item.id === old.id ? note : item) : [...data.notes, note]; document.querySelector<HTMLDialogElement>('#note-dialog')!.close(); await persist(old ? 'Side note updated.' : 'Side note saved. Bookable time did not change.'); render(); }
 async function importIcs(file: File): Promise<void> { try { const imported = parseIcs(await file.text()); const days = new Set(imported.map(eventDateKey)); const incomingIds = new Set(imported.map((event) => event.id)); const removed = data.events.filter((event) => days.has(eventDateKey(event)) && !incomingIds.has(event.id)); if (removed.length && !confirm(`Replace this day’s appointments? ${removed.length} missing appointment${removed.length === 1 ? '' : 's'} will be removed. Linked side notes will remain as unlinked side notes.`)) return; data.events = [...data.events.filter((event) => !days.has(eventDateKey(event))), ...imported]; selectedDate = eventDateKey(imported[0]); await persist(`${imported.length} ${imported.length === 1 ? 'appointment' : 'appointments'} imported. Your calendar was not changed.`); render(); } catch (error) { showToast(error instanceof Error ? error.message : 'The calendar could not be imported.'); } }
 function download(filename: string, body: string, type: string): void { const url = URL.createObjectURL(new Blob([body], { type })); const anchor = document.createElement('a'); anchor.href = url; anchor.download = filename; anchor.click(); window.setTimeout(() => URL.revokeObjectURL(url), 0); }
-async function navigate(path: string): Promise<void> { const target = new URL(path, location.origin); history.pushState({}, '', `${target.pathname}${target.search}`); await start(true); }
+async function discardDemoBeforeExit(): Promise<boolean> {
+  if (storageMode !== 'demo') return true;
+  sessionStorage.setItem(DEMO_EXIT_KEY, '1');
+  try {
+    await discardDemoData();
+    sessionStorage.removeItem(DEMO_EXIT_KEY);
+    data = { version: 1, events: [], notes: [] };
+    storageMode = 'real';
+    return true;
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : 'Demo data could not be cleared. Close other demo tabs, then try again.');
+    return false;
+  }
+}
+async function discardPendingDemoExit(): Promise<boolean> {
+  if (sessionStorage.getItem(DEMO_EXIT_KEY) !== '1') return true;
+  try {
+    await discardDemoData();
+    sessionStorage.removeItem(DEMO_EXIT_KEY);
+    return true;
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : 'Demo data could not be cleared. Close other demo tabs, then try again.');
+    return false;
+  }
+}
+async function navigate(path: string): Promise<void> {
+  const target = new URL(path, location.origin);
+  if (routeForUrl(target) !== 'demo' && !await discardDemoBeforeExit()) return;
+  if (isStaticDocument(target)) { location.assign(target.href); return; }
+  history.pushState({}, '', `${target.pathname}${target.search}`);
+  await start(true);
+}
 
 function bindEvents(): void {
   bindRoutes();
@@ -111,11 +148,11 @@ function bindEvents(): void {
   document.querySelectorAll<HTMLButtonElement>('[data-reminder-id]').forEach((button) => button.addEventListener('click', async () => { const note = data.notes.find((item) => item.id === button.dataset.reminderId); if (!note) return; note.reminder = note.reminder === 'due' ? 'acknowledged' : 'due'; note.updatedAt = new Date().toISOString(); await persist('Reminder status updated.'); render(); }));
   document.querySelector('#print-brief')?.addEventListener('click', () => window.print()); document.querySelector('#export-brief')?.addEventListener('click', () => download(`side-notes-${selectedDate}.txt`, dailyBrief(selectedDate, data), 'text/plain')); document.querySelector('#export-data')?.addEventListener('click', () => download(`booking-side-notes-backup-${selectedDate}.json`, JSON.stringify(data, null, 2), 'application/json'));
   document.querySelector<HTMLInputElement>('#json-file')?.addEventListener('change', async (event) => { const file = (event.currentTarget as HTMLInputElement).files?.[0]; if (!file) return; let parsed: unknown; try { parsed = JSON.parse(await file.text()); } catch { showToast('This backup is not valid JSON. Choose a Booking Side Notes backup exported by this app.'); return; } try { const next = validateImport(parsed); if (!confirm(`Replace this device’s backup with ${next.events.length} appointments and ${next.notes.length} side notes?`)) return; data = next; await persist('Backup imported on this device.'); render(); } catch { showToast('This backup does not have the expected format. Choose a Booking Side Notes backup exported by this app.'); } });
-  document.querySelector('#reset-demo')?.addEventListener('click', async () => { await discardDemoData(); data = sampleData(); await saveData(data, 'demo'); selectedDate = '2026-08-28'; pendingMessage = 'Demo reset to the original sample day.'; render(); }); document.querySelector('#start-real')?.addEventListener('click', async () => { await discardDemoData(); await navigate('/'); });
+  document.querySelector('#reset-demo')?.addEventListener('click', async () => { await discardDemoData(); data = sampleData(); await saveData(data, 'demo'); selectedDate = '2026-08-28'; pendingMessage = 'Demo reset to the original sample day.'; render(); }); document.querySelector('#start-real')?.addEventListener('click', () => { void navigate('/'); });
   document.querySelector('#apply-update')?.addEventListener('click', () => { updatingApp = true; void navigator.serviceWorker.getRegistration().then((registration) => registration?.waiting?.postMessage({ type: 'SKIP_WAITING' })); });
 }
 function updateNetworkState(): void { const el = document.querySelector('#network-state'); if (el) el.innerHTML = `<span aria-hidden="true">●</span> ${navigator.onLine ? 'On device' : 'Offline · on device'}`; }
 function settleNetworkState(): void { updateNetworkState(); window.setTimeout(updateNetworkState, 250); window.setTimeout(updateNetworkState, 750); }
 async function registerServiceWorker(): Promise<void> { if (!('serviceWorker' in navigator)) return; try { const registration = await navigator.serviceWorker.register('/sw.js'); if (registration.waiting) document.querySelector<HTMLDivElement>('#update-toast')!.hidden = false; registration.addEventListener('updatefound', () => registration.installing?.addEventListener('statechange', () => { if (registration.installing?.state === 'installed' && navigator.serviceWorker.controller) document.querySelector<HTMLDivElement>('#update-toast')!.hidden = false; })); navigator.serviceWorker.addEventListener('controllerchange', () => { if (updatingApp) location.reload(); }); } catch { /* Browser policy can block service workers without blocking the local app. */ } }
-async function start(_navigated = false): Promise<void> { const route = currentRoute(); setMetadata(route); if (route === 'not-found') { renderNotFound(); return; } storageMode = route === 'demo' ? 'demo' : 'real'; try { data = await loadData(storageMode); if (storageMode === 'demo' && !data.events.length && !data.notes.length) { data = sampleData(); await saveData(data, 'demo'); } selectedDate = storageMode === 'demo' ? '2026-08-28' : localDateKey(); render(); focusTitle(); } catch (error) { app.innerHTML = `<main id="main" class="fatal"><h1 id="page-title" tabindex="-1">Local storage is unavailable</h1><p>${esc(error instanceof Error ? error.message : 'Check this browser’s privacy settings and reload.')}</p></main>`; } }
-addEventListener('online', updateNetworkState); addEventListener('offline', updateNetworkState); addEventListener('popstate', () => void start(true)); addEventListener('pageshow', (event: PageTransitionEvent) => { if (event.persisted) focusTitle(); }); void start(); void registerServiceWorker();
+async function start(_navigated = false): Promise<void> { const route = currentRoute(); if (!await discardPendingDemoExit()) return; if (route !== 'demo' && !await discardDemoBeforeExit()) return; setMetadata(route); if (route === 'not-found') { renderNotFound(); return; } storageMode = route === 'demo' ? 'demo' : 'real'; try { data = await loadData(storageMode); if (storageMode === 'demo' && !data.events.length && !data.notes.length) { data = sampleData(); await saveData(data, 'demo'); } selectedDate = storageMode === 'demo' ? '2026-08-28' : localDateKey(); render(); focusTitle(); } catch (error) { app.innerHTML = `<main id="main" class="fatal"><h1 id="page-title" tabindex="-1">Local storage is unavailable</h1><p>${esc(error instanceof Error ? error.message : 'Check this browser’s privacy settings and reload.')}</p></main>`; } }
+addEventListener('online', updateNetworkState); addEventListener('offline', updateNetworkState); addEventListener('popstate', () => void start(true)); addEventListener('pagehide', () => { if (storageMode === 'demo') { sessionStorage.setItem(DEMO_EXIT_KEY, '1'); void discardDemoData(); } }); addEventListener('pageshow', (event: PageTransitionEvent) => { if (event.persisted) void start(true); }); void start(); void registerServiceWorker();
