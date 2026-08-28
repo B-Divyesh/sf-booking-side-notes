@@ -1,0 +1,11 @@
+{
+  "slug": "booking-side-notes",
+  "title": "Booking Side Notes",
+  "territory": "utilities",
+  "user": "A small appointment business that needs to keep operational notes—call back, access detail, follow-up, supplier delay—visible beside a booking without falsely blocking another appointment slot.",
+  "smallest_useful_product": "Local companion PWA that imports a day’s ICS events and attaches nonblocking, time-anchored notes, checkboxes, and reminder status; print or export a daily brief.",
+  "success_measure": "In a four-week pilot, users record 90% of operational notes in the companion and no note creates an accidental unavailable booking slot.",
+  "artifact_class": "pwa-offline",
+  "monetization": "one-time",
+  "constraints": "ICS files and notes can contain client PII; default to local storage, minimize event fields, and avoid background sync without opt-in."
+}

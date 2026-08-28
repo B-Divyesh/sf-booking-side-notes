@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Booking Side Notes map marker</title>
+  <rect width="64" height="64" rx="14" fill="#f3efdf"/>
+  <path d="M5 17c10-8 17 8 28 0s17 7 26 0M5 27c10-8 17 8 28 0s17 7 26 0M5 48c10-8 17 8 28 0s17 7 26 0" fill="none" stroke="#b9b29a" stroke-width="2"/>
+  <path d="M10 39c10-12 19-1 29-8" fill="none" stroke="#176b70" stroke-linecap="round" stroke-width="6"/>
+  <circle cx="43" cy="29" r="9" fill="#b84d2c"/>
+  <path d="m43 38 6 10H37z" fill="#b84d2c"/>
+  <circle cx="43" cy="29" r="3" fill="#fff9e9"/>
+</svg>
