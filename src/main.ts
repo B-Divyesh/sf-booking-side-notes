@@ -55,7 +55,7 @@ function noteMarkup(note: SideNote, index: number): string {
       <span class="custom-check" aria-hidden="true"></span>
       <span class="sr-only">Mark “${esc(note.text)}” ${note.completed ? 'not done' : 'done'}</span>
     </label>
-    <span class="map-pin" aria-hidden="true">${index + 1}</span>
+    <span class="map-pin" aria-hidden="true"><span>${index + 1}</span></span>
     <div class="note-body">
       <div class="note-meta">
         <span>${esc(note.anchorTime || 'Any time')}</span>
@@ -348,6 +348,7 @@ async function registerServiceWorker(): Promise<void> {
   if (!('serviceWorker' in navigator)) return;
   try {
     const registration = await navigator.serviceWorker.register('/sw.js');
+    if (registration.waiting) document.querySelector<HTMLDivElement>('#update-toast')!.hidden = false;
     registration.addEventListener('updatefound', () => {
       const worker = registration.installing;
       worker?.addEventListener('statechange', () => {

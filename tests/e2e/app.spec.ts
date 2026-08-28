@@ -33,10 +33,13 @@ test('imports a booking and pins a nonblocking note end to end', async ({ page }
 });
 
 test('has no serious or critical accessibility violations', async ({ page }) => {
+  const consoleErrors: string[] = [];
+  page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); });
   await page.goto('/');
   await expect(page.locator('#app')).not.toBeEmpty();
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]);
+  expect(consoleErrors).toEqual([]);
 });
 
 test('works at 390px and remains available offline after first visit', async ({ page, context }) => {

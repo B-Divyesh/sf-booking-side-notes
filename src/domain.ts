@@ -41,15 +41,25 @@ export function localDateKey(date = new Date()): string {
   return `${year}-${month}-${day}`;
 }
 
-export function parseIcsDate(raw: string): Date | null {
+export function parseIcsDate(raw: string, timeZone?: string): Date | null {
   const value = raw.trim();
   const match = value.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?)?(Z)?$/);
   if (!match) return null;
   const [, y, m, d, hh = '00', mm = '00', ss = '00', utc] = match;
   const parts = [Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm), Number(ss)] as const;
-  const date = utc
-    ? new Date(Date.UTC(...parts))
-    : new Date(...parts);
+  let date = utc ? new Date(Date.UTC(...parts)) : new Date(...parts);
+  if (!utc && timeZone) {
+    try {
+      const guess = Date.UTC(...parts);
+      const formatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone, year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+      });
+      const rendered = Object.fromEntries(formatter.formatToParts(new Date(guess)).map((part) => [part.type, part.value]));
+      const renderedAsUtc = Date.UTC(Number(rendered.year), Number(rendered.month) - 1, Number(rendered.day), Number(rendered.hour), Number(rendered.minute), Number(rendered.second));
+      date = new Date(guess - (renderedAsUtc - guess));
+    } catch { /* An unknown TZID falls back to the device timezone. */ }
+  }
   return Number.isNaN(date.valueOf()) ? null : date;
 }
 
@@ -59,18 +69,27 @@ export function parseIcs(source: string): CalendarEvent[] {
   const blocks = [...unfolded.matchAll(/BEGIN:VEVENT\r?\n([\s\S]*?)END:VEVENT/gi)];
   if (!blocks.length) throw new Error('No appointments were found in this calendar file.');
 
+  const usedIds = new Set<string>();
   const events = blocks.flatMap((block, index): CalendarEvent[] => {
     const fields = new Map<string, string>();
+    const zones = new Map<string, string>();
     for (const line of block[1].split(/\r?\n/)) {
       const divider = line.indexOf(':');
       if (divider < 0) continue;
-      const key = line.slice(0, divider).split(';')[0].toUpperCase();
+      const property = line.slice(0, divider);
+      const key = property.split(';')[0].toUpperCase();
+      const zone = property.match(/(?:^|;)TZID=([^;:]+)/i)?.[1];
       if (!fields.has(key)) fields.set(key, line.slice(divider + 1));
+      if (zone) zones.set(key, zone);
     }
-    const start = parseIcsDate(fields.get('DTSTART') ?? '');
+    const start = parseIcsDate(fields.get('DTSTART') ?? '', zones.get('DTSTART'));
     if (!start) return [];
-    const end = parseIcsDate(fields.get('DTEND') ?? '');
-    const uid = fields.get('UID')?.trim() || `event-${start.valueOf()}-${index}`;
+    const end = parseIcsDate(fields.get('DTEND') ?? '', zones.get('DTEND'));
+    const baseUid = fields.get('UID')?.trim() || `event-${start.valueOf()}-${index}`;
+    const recurrence = fields.get('RECURRENCE-ID')?.trim();
+    let uid = recurrence ? `${baseUid}::${recurrence}` : baseUid;
+    if (usedIds.has(uid)) uid = `${uid}::${start.toISOString()}`;
+    usedIds.add(uid);
     return [{
       id: uid,
       summary: unescapeIcs(fields.get('SUMMARY') || 'Untitled appointment'),

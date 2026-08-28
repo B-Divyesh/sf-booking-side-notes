@@ -29,6 +29,11 @@ describe('ICS import', () => {
     expect(() => parseIcs('not a calendar')).toThrow(/not an ICS calendar/i);
     expect(() => parseIcs('BEGIN:VCALENDAR\nEND:VCALENDAR')).toThrow(/No appointments/i);
   });
+
+  it('honors common TZID timestamps', () => {
+    const zoned = parseIcs(`BEGIN:VCALENDAR\nBEGIN:VEVENT\nUID:zoned\nDTSTART;TZID=America/New_York:20260828T090000\nSUMMARY:Call\nEND:VEVENT\nEND:VCALENDAR`);
+    expect(zoned[0].start).toBe('2026-08-28T13:00:00.000Z');
+  });
 });
 
 describe('portable data', () => {
