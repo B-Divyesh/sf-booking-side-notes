@@ -3,7 +3,7 @@
   "name": "Booking Side Notes",
   "short_name": "Side Notes",
   "description": "Nonblocking operational notes beside your appointments.",
-  "start_url": "/?v=1",
+  "start_url": "/?v=2",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f3efdf",

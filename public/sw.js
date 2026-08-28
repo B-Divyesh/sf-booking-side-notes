@@ -1,5 +1,5 @@
 const VERSION = 'booking-side-notes-v1';
-const PRECACHE = /*__PRECACHE__*/ ['/','/index.html','/offline.html'];
+const PRECACHE = /*__PRECACHE__*/ ['/','/demo','/index.html','/offline.html'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(VERSION).then((cache) => Promise.all(PRECACHE.map(async (url) => {
@@ -29,10 +29,10 @@ self.addEventListener('fetch', (event) => {
       const copy = response.clone();
       caches.open(VERSION).then((cache) => cache.put(event.request, copy));
       return response;
-    }).catch(async () => (await caches.match(event.request)) || (await caches.match('/index.html')) || caches.match('/offline.html')));
+    }).catch(async () => (await caches.match(url.pathname, { ignoreSearch: true })) || (await caches.match('/index.html')) || caches.match('/offline.html')));
     return;
   }
-  event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
+  event.respondWith(caches.match(url.pathname, { ignoreSearch: true }).then((cached) => cached || fetch(event.request).then((response) => {
     if (response.ok) caches.open(VERSION).then((cache) => cache.put(event.request, response.clone()));
     return response;
   })));

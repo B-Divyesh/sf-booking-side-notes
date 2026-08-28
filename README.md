@@ -1,62 +1,49 @@
 # Booking Side Notes
 
-Booking Side Notes is a local-first companion for small appointment businesses. Import a day of appointments from an ICS file, then pin callbacks, access details, supplier delays, and follow-ups beside those bookings without creating fake events or blocking availability.
+Keep side notes beside appointments without changing bookable time.
 
-Live product: <https://booking-side-notes.sociobot.in>
+Booking Side Notes is for small appointment businesses. Import an `.ics` calendar file, then keep callbacks, access details, delays, and follow-ups beside the appointment. The app is a browser tool, not a calendar or customer database.
+
+Try it immediately at [the sample demo](https://booking-side-notes.sociobot.in/demo). The demo has a separate local database and can be reset at any time.
 
 ## What it does
 
-- Imports ICS appointments locally and retains only the UID, name, time, and location.
-- Adds time-anchored or appointment-linked notes with completion and reminder status.
-- Makes the nonblocking contract explicit: side notes never write to the source calendar.
-- Prints or downloads a plain-text daily brief.
-- Exports and restores the complete local archive as JSON.
-- Installs as an offline PWA and works at phone and desktop sizes.
-- Offers an optional US $12 one-time Trail Kit license for one-tap note phrases. Core notes, print, and data export are free.
+- Imports appointment ID, name, start and end times, and location from an `.ics` calendar export.
+- Adds appointment-linked or day-level side notes with completion and reminder status.
+- Replaces an imported day after confirmation. Side notes for missing appointments remain as clearly marked unlinked notes.
+- Prints or downloads a daily brief and exports one JSON backup file.
 
-Calendar data and notes are stored in IndexedDB on the current device. There is no account, analytics, background sync, or data upload. See the in-product [privacy policy](https://booking-side-notes.sociobot.in/privacy/).
+Appointment details and side notes stay in this browser. Side notes do not change appointments or block appointment time. The app works offline after the first visit. No purchase is required for side notes, daily briefs, or backups. Each of these promises is listed and tested in [`.factory/claims.json`](.factory/claims.json).
 
-## Develop
+## Run and test
 
-Requires Node.js 20 or newer.
-
-```sh
-npm install
-npm run dev
-```
-
-Open <http://127.0.0.1:5173>. The app uses system fonts and has no runtime CDN dependencies.
-
-## Test and build
-
-```sh
-npm test             # domain and ICS unit tests
-npm run test:e2e     # Chromium: workflow, axe, 390px, and offline mode
-npx tsc --noEmit     # strict type check
-npm run build        # production output -> dist/
-```
-
-The exact deployment build command is `npm run build`. Static output is written to `dist/`, with `dist/index.html` at its root. The post-build step inlines the small critical app shell and injects the hashed assets into the service worker cache list.
-
-For a clean-clone verification:
+Use Node.js 20 or newer for local development.
 
 ```sh
 npm ci
-npm test
-npm run build
+npm run dev
 ```
 
-Playwright is pinned to 1.58.2. In the factory image its Chromium build is already available through `PLAYWRIGHT_BROWSERS_PATH`; elsewhere, run `npx playwright install chromium` once.
+Open <http://127.0.0.1:5173>. The project uses system fonts and has no runtime CDN dependencies.
 
-## Deployment and billing
+```sh
+npm test
+npx tsc --noEmit
+npm run build
+npm run test:e2e
+```
 
-Deploy the contents of `dist/` to a static host with HTTPS. Do not deploy repository or source files. The optional purchase link uses the Sociobot hosted checkout at `/api/v1/products/booking-side-notes/checkout`; the factory must register the product before release. No payment provider is embedded here.
+`npm run build` writes the static site to `dist/`, with `dist/index.html` at its root. Playwright is pinned to 1.58.2. If Chromium is not already installed, run `npx playwright install chromium` once.
 
-## Product boundaries
+## Deploy
 
-This is not a scheduler, CRM, calendar host, or notification service. It does not expand recurring-event rules itself; import an ICS export containing the instances you need. It does not send SMS, email, or push reminders. Browser storage can be cleared by the user or device, so regular JSON backups are recommended.
+Deploy the contents of `dist/` to an HTTPS static host. The repository includes `staticwebapp.config.json` for routing, security headers, cache policy, and manifest MIME type. Do not deploy source files.
 
-Design rationale and asset provenance are in [`.factory/design.md`](.factory/design.md). The work-order verification record is in [`.factory/handoff.md`](.factory/handoff.md).
+## Boundaries
+
+This tool does not schedule appointments, change calendar availability, send notifications, or expand recurring calendar rules. Export the appointment instances you need from your calendar. Browser storage can be cleared, so export a backup regularly.
+
+See [Privacy](https://booking-side-notes.sociobot.in/privacy/) and [Terms](https://booking-side-notes.sociobot.in/terms/). Design rationale and asset provenance are in [`.factory/design.md`](.factory/design.md).
 
 ## License
 

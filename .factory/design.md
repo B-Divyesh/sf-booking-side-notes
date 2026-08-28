@@ -65,3 +65,7 @@ The hero image is an original AI-generated editorial still-life that clarifies t
 - Negative list: no people, hands, brands, logos, readable text, letters, numbers, calendar grid, watermark, neon gradients, glossy 3D, clutter
 
 Generated with the factory Azure image deployment (`/opt/fleet/lib/gen-image.sh`), 2026-08-28. The selected source and exact prompt live in `assets/src/hero-map.json`; responsive output is optimized to AVIF and WebP with a progressive JPEG fallback. Generated imagery is original for this product under the project’s MIT distribution.
+
+The 1200×630 social card is a cropped, optimized derivative of the same
+reviewed original hero image. `apple-touch-icon.png` is a raster derivative of
+the hand-authored app mark. Neither introduces a third-party asset.
