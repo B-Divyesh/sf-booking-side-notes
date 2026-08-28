@@ -4,11 +4,12 @@ import { describe, expect, it } from 'vitest';
 describe('static deployment contract', () => {
   it('ships routing, security headers, immutable assets, and manifest MIME', async () => {
     const config = JSON.parse(await readFile('staticwebapp.config.json', 'utf8'));
-    expect(config.navigationFallback.rewrite).toBe('/index.html');
+    expect(config.navigationFallback).toMatchObject({ rewrite: '/index.html', exclude: ['/*'] });
     expect(config.responseOverrides['404']).toMatchObject({ rewrite: '/404.html', statusCode: 404 });
     expect(config.globalHeaders['Content-Security-Policy']).toContain("frame-ancestors 'none'");
     expect(config.globalHeaders['Permissions-Policy']).toContain('camera=()');
     expect(config.mimeTypes['.webmanifest']).toBe('application/manifest+json');
+    expect(config.routes.find((route: { route: string }) => route.route === '/demo')).toMatchObject({ rewrite: '/index.html' });
     const assets = config.routes.find((route: { route: string }) => route.route === '/assets/*');
     const manifest = config.routes.find((route: { route: string }) => route.route === '/manifest.webmanifest');
     expect(assets.headers['Cache-Control']).toContain('immutable');
