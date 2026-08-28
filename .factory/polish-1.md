@@ -2,8 +2,11 @@
 
 Evidence key: **E2E** is `npm run test:e2e`; **unit** is `npm test`; **build**
 is `npm run build`; **desktop** is `.factory/evidence/demo-desktop.png`; and
-**mobile** is `.factory/evidence/home-mobile.png`. The live check is recorded
-in the handoff after deployment.
+**mobile** is `.factory/evidence/home-mobile.png`. Cold live checks on
+2026-08-28 passed: `/` has the new title/H1 and no 390px overflow; `/demo` and
+`/?demo=1` show the banner and sample; `/privacy/` has its route title/H1; and
+`/not-a-real-route` returns the styled 404 with HTTP 404. Live screenshots are
+`.factory/evidence/live-demo-mobile.png` and `.factory/evidence/live-404-mobile.png`.
 
 | Finding | Change made | Evidence |
 | --- | --- | --- |
