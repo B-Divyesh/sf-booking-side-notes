@@ -1,5 +1,30 @@
 # Handoff — booking-side-notes-build-1
 
+## Independent verification disposition (2026-08-28)
+
+**PASS — candidate `83162bd92caf72118ebe0419a34cbbe58adaddf0` is deployed at
+<https://booking-side-notes.sociobot.in> and meets the researched brief's
+smallest useful product contract.**
+
+Fresh verification from a clean checkout passed `npm ci`, 5/5 unit tests,
+strict TypeScript, the exact production build, and 3/3 repository Chromium
+tests. Independent Chromium checks exercised invalid-ICS recovery, normal ICS
+import, a 500-character anchored/reminder note, zero blocked minutes, export,
+refresh persistence, focus/dialog behavior, 390px layout, reduced motion,
+offline reload, axe serious/critical findings (none), PWA installability, and
+an actual service-worker waiting/update-toast cycle. There were no console
+errors or third-party requests on the normal path.
+
+All deployable files (HTML, SW, manifest, legal/offline pages, icons and hero
+assets) matched the rebuilt candidate byte-for-byte on the live URL. The full
+evidence and reproducible commands are in `.factory/verification.md`.
+
+There are no release-blocking defects. Three low-severity follow-ups remain:
+add CSP/frame/permissions response policies, use immutable caching (plus
+`application/manifest+json`) for static assets, and replace raw malformed-JSON
+parse errors with recovery guidance. These do not prevent the local-first
+workflow or PWA install/offline behavior validated above.
+
 ## Delivered
 
 - A finished Vite + TypeScript local-first PWA for importing ICS appointments and attaching genuinely nonblocking operational notes.
