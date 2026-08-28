@@ -1,3 +1,48 @@
+# Handoff — booking-side-notes-review-1
+
+## Review disposition (2026-08-28)
+
+**FAIL.** The full adversarial first-read review is in `.factory/review-1.md`.
+No product code was modified.
+
+The deployed site was checked cold at 390×844 and 1440×1000, with fresh
+browser contexts. The review exercised direct demo URLs, IndexedDB isolation,
+offline reload, a PII-bearing ICS import under network observation, data
+export, malformed backup import, route metadata, unknown routes, history and
+focus, all visible links, Axe on all public routes, and the earlier handoff's
+known gaps.
+
+Primary blockers are:
+
+- The phone first screen does not name the intended user or expose a first
+  workflow action before scrolling.
+- There is no one-click sample demo. `/demo` and `?demo=1` read and write the
+  real IndexedDB namespace.
+- `.factory/claims.json`, claim-tagged tests, and `.factory/demo.md` are absent.
+- The advertised Trail Kit checkout returns HTTP 404.
+- Unknown routes return the ordinary app with HTTP 200; there is no designed
+  404.
+- The prior security-policy, caching/manifest-MIME, and malformed-backup-error
+  follow-ups remain incomplete.
+
+Clean-clone verification at commit
+`22ed815909a06e0a73cfa85d52fdc9076838f336`:
+
+- `npm ci`: passed, 0 vulnerabilities.
+- `npm test`: passed, 5/5 tests.
+- `npm run build`: passed; `dist/` was produced.
+- `npm run test:e2e`: passed, 3/3 Chromium tests.
+- Claim commands: not runnable because the claim registry does not exist.
+
+The existing tests are useful regression coverage but do not satisfy the
+required per-claim sandbox contract. The next worker should resolve every
+finding in `.factory/review-1.md`, then re-run the entire review rather than a
+diff-only check.
+
+---
+
+## Prior build handoff retained for review history
+
 # Handoff — booking-side-notes-build-1
 
 ## Independent verification disposition (2026-08-28)
