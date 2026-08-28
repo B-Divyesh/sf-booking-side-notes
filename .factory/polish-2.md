@@ -120,7 +120,8 @@ performance/accessibility/best-practices/SEO. Home LCP was 1.9 s; demo LCP
 1.4 s; both CLS 0. Playwright Axe reported zero serious/critical findings on
 home, demo, Privacy, Terms, and 404.
 
-The live cold check found one origin only, zero console errors, zero undersized
+The final live cold check at deployed commit `a6ee126` found one origin only,
+zero console errors, zero undersized
 targets, zero serious/critical Axe findings, successful offline reload, intact
 demo isolation/reset, and working legal/history focus. Live screenshot:
 `.factory/evidence/polish-2-live-demo-mobile.png`.

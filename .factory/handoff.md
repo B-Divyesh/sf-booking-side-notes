@@ -65,8 +65,9 @@ Built with the work-order command, pushed to `main`, and deployed with:
 /opt/fleet/lib/deploy-static.sh booking-side-notes dist
 ```
 
-Azure deployment `bbbe7898-998a-48ed-ade1-0ff24325102d` succeeded. The custom
-domain is <https://booking-side-notes.sociobot.in>.
+Final Azure deployment `f6160605-c563-458a-b7d5-e2a36ffa3183` succeeded from
+commit `a6ee126`. The custom domain is
+<https://booking-side-notes.sociobot.in>.
 
 Fresh live Chromium checks on 2026-08-28 found:
 
