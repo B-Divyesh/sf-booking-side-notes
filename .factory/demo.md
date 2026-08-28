@@ -1,7 +1,8 @@
 # Demo sandbox
 
-Open `/demo` or `/?demo=1` for a one-click sample day with three appointments
-and three realistic side notes. The banner says “Demo — sample data, nothing is
+Open `/?demo=1` or `/demo` for a one-click sample day with three appointments
+and three realistic side notes. The first phone screen shows a linked
+appointment and side note. The banner says “Demo — sample data, nothing is
 saved.” **Reset demo** restores the shipped sample. **Start for real** deletes
 the demo database and opens the ordinary workspace.
 

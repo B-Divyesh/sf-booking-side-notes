@@ -2,7 +2,7 @@
   "id": "/?source=installed",
   "name": "Booking Side Notes",
   "short_name": "Side Notes",
-  "description": "Nonblocking operational notes beside your appointments.",
+  "description": "Keep side notes beside appointments without changing bookable time.",
   "start_url": "/?v=2",
   "scope": "/",
   "display": "standalone",

@@ -121,7 +121,7 @@ export function dailyBrief(dateKey: string, data: AppData): string {
   const notes = data.notes.filter((note) => note.date === dateKey);
   const lines = [
     `BOOKING SIDE NOTES — ${formatDay(dateKey).toUpperCase()}`,
-    'Operational context only. These notes do not block calendar availability.',
+    'Side notes only. Your calendar and bookable time do not change.',
     '',
   ];
   if (!events.length) lines.push('APPOINTMENTS\nNo imported appointments.\n');
