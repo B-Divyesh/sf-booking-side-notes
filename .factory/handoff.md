@@ -1,25 +1,65 @@
-# Handoff — booking-side-notes review 3
+# Handoff — Booking Side Notes polish 3
 
 ## Delivered
 
-- Added `.factory/review-3.md`: a fresh adversarial live review of the deployed site at commit `0cadc1a`.
-- Did not modify product code, assets, configuration, or tests.
-- Verdict is **FAIL** solely for `F-3-1`: the landing eyebrow “Private appointment companion” is a vague, unlisted privacy/marketing claim. The review gives the exact narrow rewrite/removal required.
+- Removed the vague, unlisted landing eyebrow “Private appointment companion.”
+  The first screen now starts directly with the tested job headline.
+- Added a regression check that the removed phrase cannot return.
+- Hardened the offline-status label after a service-worker-backed navigation.
+  It rechecks browser connectivity after the app renders, so a cached demo
+  reload does not briefly retain a stale online label.
+- Updated the catalog sentence to: “Keep callback and access notes beside
+  appointments without changing bookable time.” It is verb-first and 83
+  characters.
+- Preserved the local-first PWA, real isolated demo, map-paper visual system,
+  routing, legal pages, and all earlier repairs.
 
-## Verification performed
+## Commits and deployment
 
-- Fresh live Chromium contexts at 390×844 and 1440×1000; cold-read questions pass.
-- Live demo: used sample state is above the phone fold; banner, reset, start-for-real, real/demo IndexedDB separation, same-origin requests, and offline reload were exercised.
-- Fresh GitHub clone: `/tmp/booking-side-notes-review3.SFrI58` at `0cadc1a50e9ef6aa09230231c5a5cb381e8fc2ce`; `npm ci` completed with 0 vulnerabilities.
-- Every exact `.factory/claims.json` command passed independently (13/13).
-- `npm test` (9 passed), `npx tsc --noEmit`, `npm run build`, and `npm run test:e2e` (16 passed) all passed in that clone.
-- Live route/metadata/footer/link crawl checked home, both demo URLs, Privacy, Terms, 404, unknown path, robots, sitemap, manifest, favicon/social assets, and all discovered links. History focus and accessibility coverage pass.
-- Read and revalidated every earlier review/polish/handoff finding; the matrix is in `.factory/review-3.md`.
+- Repair commits: `8d75739` (remove vague privacy claim) and `1fbdcd5`
+  (settle offline status after cached navigation).
+- Both commits are pushed to `origin/main`.
+- Deployed with the injected static work-order configuration using
+  `/opt/fleet/lib/deploy-static.sh booking-side-notes dist`.
+- Live site: <https://booking-side-notes.sociobot.in>. The final live shell
+  references `index-D4EH0llZ.js`, the bundle built from `1fbdcd5`.
+
+## Verification
+
+Fresh clone `/tmp/booking-side-notes-polish3-final.1nKRPq/repo` at
+`1fbdcd5726cbd1b108d3a1cf0917191bac455478`:
+
+- `npm ci` passed with 0 audit vulnerabilities.
+- `npm test` passed: 10/10.
+- `npx tsc --noEmit` passed.
+- `npm run build` passed and produced `dist/index.html`.
+- Every exact command in `.factory/claims.json` passed independently: 13/13.
+- `npm run test:e2e` passed: 16/16, including demo isolation, privacy-origin
+  capture, offline reload/edit, route history focus, mobile target geometry,
+  and Playwright Axe checks.
+- Final built JS: 28,296 B raw / 9,541 B gzip. CSS: 20,524 B raw / 5,346 B
+  gzip.
+
+Local Lighthouse mobile, measured against the built app: home 96/100/100/100
+and demo 96/100/100/100 for performance/accessibility/best-practices/SEO.
+Home LCP was 1.5 s, demo LCP 1.4 s, and both had CLS 0.
+
+The prescribed `verify-url.sh` passed live on both `/` and `/demo`: each had
+the right title, `lang=en`, one H1, a main landmark, image alt coverage,
+labelled buttons, and zero console errors. The standalone Axe CLI cannot find
+a system Chrome in this container; the equivalent Playwright Axe integration
+ran locally and live across home, demo, Privacy, Terms, and 404 with zero
+serious or critical violations.
+
+Final cold live checks confirmed the first phone screen, demo banner/reset/
+exit and real/demo IndexedDB isolation, offline `/demo` reload and local edit,
+all real route titles and metadata, HTTP 404, footer/navigation parity,
+Home → Privacy → Terms → Back → Back H1 focus, and zero serious/critical Axe
+findings. Evidence: `.factory/evidence/polish-3-live-home-mobile.png`,
+`.factory/evidence/polish-3-live-demo-mobile.png`, and
+`.factory/evidence/polish-3-live-404-mobile.png`.
 
 ## Remaining work
 
-Resolve F-3-1, then rerun the product’s existing test commands. The reviewer did not make that product-copy change because this work order is review-only.
-
-## Commit
-
-This handoff and the review are committed together in the review commit for this work order.
+None. All review-1, review-2, and review-3 findings are mapped to final
+evidence in `.factory/polish-3.md`.
