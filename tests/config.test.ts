@@ -8,6 +8,7 @@ describe('static deployment contract', () => {
     expect(config.responseOverrides['404']).toMatchObject({ rewrite: '/404.html', statusCode: 404 });
     expect(config.globalHeaders['Content-Security-Policy']).toContain("frame-ancestors 'none'");
     expect(config.globalHeaders['Permissions-Policy']).toContain('camera=()');
+    expect(config.mimeTypes['.webmanifest']).toBe('application/manifest+json');
     const assets = config.routes.find((route: { route: string }) => route.route === '/assets/*');
     const manifest = config.routes.find((route: { route: string }) => route.route === '/manifest.webmanifest');
     expect(assets.headers['Cache-Control']).toContain('immutable');
