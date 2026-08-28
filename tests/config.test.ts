@@ -9,7 +9,10 @@ describe('static deployment contract', () => {
     expect(config.globalHeaders['Content-Security-Policy']).toContain("frame-ancestors 'none'");
     expect(config.globalHeaders['Permissions-Policy']).toContain('camera=()');
     expect(config.mimeTypes['.webmanifest']).toBe('application/manifest+json');
-    expect(config.routes.find((route: { route: string }) => route.route === '/demo')).toMatchObject({ rewrite: '/index.html' });
+    expect(config.routes.find((route: { route: string }) => route.route === '/demo')).toMatchObject({ rewrite: '/index.html', headers: { 'Cache-Control': 'no-cache' } });
+    for (const route of ['/privacy/*', '/terms/*', '/404.html']) {
+      expect(config.routes.find((item: { route: string }) => item.route === route)).toMatchObject({ headers: { 'Cache-Control': 'no-cache' } });
+    }
     const assets = config.routes.find((route: { route: string }) => route.route === '/assets/*');
     const manifest = config.routes.find((route: { route: string }) => route.route === '/manifest.webmanifest');
     expect(assets.headers['Cache-Control']).toContain('immutable');
