@@ -2,7 +2,11 @@ const VERSION = 'booking-side-notes-v1';
 const PRECACHE = /*__PRECACHE__*/ ['/','/index.html','/offline.html'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(VERSION).then((cache) => cache.addAll(PRECACHE)));
+  event.waitUntil(caches.open(VERSION).then((cache) => Promise.all(PRECACHE.map(async (url) => {
+    const response = await fetch(new Request(url, { cache: 'reload' }));
+    if (!response.ok) throw new Error(`Could not precache ${url}`);
+    await cache.put(url, response);
+  }))));
 });
 
 self.addEventListener('activate', (event) => {
