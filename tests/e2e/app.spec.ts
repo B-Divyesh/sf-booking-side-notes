@@ -39,22 +39,57 @@ async function goDemo(page: import('@playwright/test').Page) {
   await expect(page.getByRole('heading', { name: 'Harbour House boiler visit' })).toBeVisible();
 }
 
-test('@claim:demo-isolated demo starts with sample data, resets it, and never reads real data', async ({ page }) => {
+test('@claim:demo-isolated demo stays visibly marked, resets sample data, and never changes real data', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.locator('#add-note').click();
   await page.locator('#note-text').fill('REAL CUSTOMER NOTE');
   await page.getByRole('button', { name: 'Save side note' }).click();
   await expect(page.locator('.note-body > p').filter({ hasText: 'REAL CUSTOMER NOTE' })).toBeVisible();
+  const realDataBeforeDemo = await page.evaluate(async () => new Promise((resolve, reject) => {
+    const request = indexedDB.open('booking-side-notes');
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const read = db.transaction('local-data').objectStore('local-data').get('state-v1');
+      read.onerror = () => reject(read.error);
+      read.onsuccess = () => { resolve(read.result); db.close(); };
+    };
+  }));
   await goDemo(page);
   await expect(page.getByText('REAL CUSTOMER NOTE')).toHaveCount(0);
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = 'auto';
+    scrollTo(0, 1200);
+  });
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThanOrEqual(1200);
+  const bannerBox = await page.locator('.demo-banner').boundingBox();
+  expect(bannerBox).not.toBeNull();
+  expect(bannerBox!.y).toBeGreaterThanOrEqual(0);
+  expect(bannerBox!.y + bannerBox!.height).toBeLessThanOrEqual(844);
+  await expect(page.getByRole('button', { name: 'Reset demo' })).toBeInViewport();
+  await expect(page.getByRole('button', { name: 'Start for real' })).toBeInViewport();
+  await page.screenshot({ path: '.factory/evidence/polish-4-demo-scrolled-mobile.png', fullPage: false });
   await page.locator('#add-note').click();
   await page.locator('#note-text').fill('DEMO ONLY NOTE');
   await page.getByRole('button', { name: 'Save side note' }).click();
   await expect(page.locator('.note-body > p').filter({ hasText: 'DEMO ONLY NOTE' })).toBeVisible();
+  const realDataDuringDemo = await page.evaluate(async () => new Promise((resolve, reject) => {
+    const request = indexedDB.open('booking-side-notes');
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const read = db.transaction('local-data').objectStore('local-data').get('state-v1');
+      read.onerror = () => reject(read.error);
+      read.onsuccess = () => { resolve(read.result); db.close(); };
+    };
+  }));
+  expect(realDataDuringDemo).toEqual(realDataBeforeDemo);
   await page.getByRole('button', { name: 'Reset demo' }).click();
   await expect(page.getByText('DEMO ONLY NOTE')).toHaveCount(0);
   await page.getByRole('button', { name: 'Start for real' }).click();
   await expect(page.locator('.note-body > p').filter({ hasText: 'REAL CUSTOMER NOTE' })).toBeVisible();
+  await expect(page.getByText('DEMO ONLY NOTE')).toHaveCount(0);
 });
 
 test('@claim:local-no-upload demo actions request only this site', async ({ page }) => {
@@ -267,7 +302,7 @@ test('demo opens in-use records in the first phone viewport and every target is 
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]);
   expect(errors).toEqual([]);
-  await page.screenshot({ path: '.factory/evidence/polish-3-demo-mobile.png', fullPage: false });
+  await page.screenshot({ path: '.factory/evidence/polish-4-demo-mobile.png', fullPage: false });
 });
 
 test('route metadata, shared footers, accessibility, and full back focus are complete', async ({ page }) => {

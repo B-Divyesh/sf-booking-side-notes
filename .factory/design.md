@@ -41,6 +41,7 @@ The minimum body-text contrast is 7:1 on paper. Color is never the only state cu
 - Notes are burnt-orange numbered pins connected to a dotted side rail. They never visually fill a time range.
 - Completed notes fade and receive a line-through; a clear text label carries the state.
 - Editing happens in a small field-sheet dialog that opens from the originating marker and returns focus there on close.
+- Demo mode uses a compact burnt-orange field strip that stays pinned above the editable sample, so its temporary boundary never disappears.
 - Primary actions are solid trail-orange. Secondary actions resemble outlined map stamps. Text links use lake teal and underline.
 - Desktop shows itinerary and note ledger side by side. At 820px the ledger stacks beneath the day route; at 390px metadata compresses and actions become full-width where useful.
 - Empty and error states are map legends with a single explicit next step. Offline status is always visible in the masthead.

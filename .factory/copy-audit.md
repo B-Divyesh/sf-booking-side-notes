@@ -30,6 +30,9 @@ No sentence exceeds 22 words. No supplied banned marketing word appears.
 | Reminder due / Reminder acknowledged | 2 / 2 | State text |
 | Mark reminder acknowledged / Mark reminder due | 3 / 3 | Result-naming actions |
 
+The exact demo disclosure stays visible while the sample workspace remains
+editable. Reset and exit controls remain beside it at 390px.
+
 ## Workspace and explanation
 
 | Text | Words | Result |
@@ -92,3 +95,8 @@ the whole day,” “backup file,” “loads no third-party files,” and “ap
 
 “0 minutes blocked” appears only in the measured capacity status and exported
 daily brief.
+
+## Catalog
+
+“Keep side notes beside appointments without changing bookable time.” has nine
+words and 67 characters. It starts with a verb and contains no banned term.

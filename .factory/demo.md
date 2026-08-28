@@ -3,8 +3,9 @@
 Open `/?demo=1` or `/demo` for a one-click sample day with three appointments
 and three realistic side notes. The first phone screen shows a linked
 appointment and side note. The banner says “Demo — sample data, nothing is
-saved.” **Reset demo** restores the shipped sample. **Start for real** deletes
-the demo database and opens the ordinary workspace.
+saved.” It stays at the top of the viewport while the sample workspace is
+editable. **Reset demo** restores the shipped sample. **Start for real**
+deletes the demo database and opens the ordinary workspace.
 
 Demo state is stored only in IndexedDB database `booking-side-notes-demo`, store
 `local-data`, key `demo:state-v1`. Real state uses the separate

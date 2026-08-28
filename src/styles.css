@@ -88,7 +88,7 @@ textarea { resize: vertical; line-height: 1.5; }
 .capacity-banner > span:nth-child(2) { font-size: .8rem; line-height: 1.25; }
 .capacity-banner > span:last-child { font-size: .8rem; font-weight: 750; }
 .capacity-rule { height: 1px; background: repeating-linear-gradient(90deg, #93a49e 0 7px, transparent 7px 13px); }
-.demo-banner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 12px; margin: 18px -12px 0; padding: 12px 16px; color: var(--ink); background: #f8dfc9; border: 1px solid var(--trail); }
+.demo-banner { position: sticky; z-index: 20; top: 0; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 12px; margin: 18px -12px 0; padding: 12px 16px; color: var(--ink); background: #f8dfc9; border: 1px solid var(--trail); box-shadow: 0 5px 18px rgb(23 45 41 / .14); }
 .demo-banner span { color: var(--trail-dark); font-size: .82rem; }
 .demo-first-look { margin: 28px 0 24px; }
 .demo-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, .8fr); gap: 8px 32px; align-items: end; margin-bottom: 20px; }
@@ -220,7 +220,7 @@ dialog form { padding: 24px; }
   .appointment .button { grid-column: 2; justify-self: start; }
   .note-card { grid-template-columns: 44px 28px 1fr; }.note-actions { grid-column: 3; justify-content: end; }
   .brief-actions { align-items: stretch; flex-direction: column; padding: 22px 18px; }
-  .demo-banner { grid-template-columns: 1fr 1fr; margin: 14px 0 0; }.demo-banner strong, .demo-banner span { grid-column: 1 / -1; }
+  .demo-banner { grid-template-columns: minmax(0, 1fr) auto auto; margin: 0 -16px; }.demo-banner span { display: none; }
   .demo-first-look { margin-top: 20px; }.demo-intro { grid-template-columns: 1fr; margin-bottom: 14px; }.demo-intro .eyebrow { grid-column: auto; }.demo-intro > p:last-child { display: none; }.demo-glance { grid-template-columns: 1fr; gap: 4px; padding: 12px 14px; }.demo-glance .appointment { min-height: 104px; padding-top: 10px; padding-bottom: 10px; }.demo-glance .note-card { min-height: 104px; padding-top: 10px; padding-bottom: 6px; }.demo-note { padding: 10px 0 0; border-top: 1px dotted var(--trail); border-left: 0; }
   .how-it-works, .boundaries { margin-top: 40px; padding: 22px 18px; }.how-it-works ol, .boundaries ul { grid-template-columns: 1fr; gap: 12px; }
   footer { align-items: start; flex-direction: column; }
@@ -237,7 +237,7 @@ dialog form { padding: 24px; }
   .dialog-actions { flex-direction: column-reverse; }.dialog-actions .button { width: 100%; }
   .license-row { grid-template-columns: 1fr; }
   .hero { padding-top: 24px; gap: 20px; }.hero-art { display: none; }.hero-actions { align-items: stretch; }.hero-actions .button { width: 100%; }.hero-actions > span { flex-basis: 100%; }.hero-facts { display: grid; grid-template-columns: 1fr; gap: 5px; }
-  .demo-banner { padding: 9px 12px; }.demo-banner span { display: none; }.demo-first-look { margin-top: 12px; }.demo-intro .eyebrow { display: none; }.demo-intro h1 { font-size: 2rem; line-height: 1; }.demo-glance { padding: 8px 12px; }.demo-glance .appointment .button { display: none; }
+  .demo-banner { gap: 6px; padding: 7px 8px; }.demo-banner strong { font-size: .72rem; line-height: 1.25; }.demo-banner .button.compact { padding-inline: 8px; font-size: .72rem; }.demo-first-look { margin-top: 12px; }.demo-intro .eyebrow { display: none; }.demo-intro h1 { font-size: 2rem; line-height: 1; }.demo-glance { padding: 8px 12px; }.demo-glance .appointment .button { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
