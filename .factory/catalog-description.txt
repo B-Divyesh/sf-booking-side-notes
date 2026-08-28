@@ -1,1 +1,1 @@
-Keep side notes beside appointments without changing bookable time.
+Keep callback and access notes beside appointments without changing bookable time.

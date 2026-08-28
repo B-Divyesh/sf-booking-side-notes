@@ -243,6 +243,7 @@ test('demo opens in-use records in the first phone viewport and every target is 
   await page.goto('/');
   await expect(page).toHaveTitle(/side notes beside appointments/i);
   await expect(page.locator('h1')).toHaveCount(1);
+  await expect(page.getByText('Private appointment companion', { exact: true })).toHaveCount(0);
   await page.getByRole('link', { name: 'Try demo' }).click();
   await expect(page).toHaveURL(/\?demo=1$/);
   await expect(page).toHaveTitle('Demo — Booking Side Notes');
@@ -266,7 +267,7 @@ test('demo opens in-use records in the first phone viewport and every target is 
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]);
   expect(errors).toEqual([]);
-  await page.screenshot({ path: '.factory/evidence/polish-2-demo-mobile.png', fullPage: false });
+  await page.screenshot({ path: '.factory/evidence/polish-3-demo-mobile.png', fullPage: false });
 });
 
 test('route metadata, shared footers, accessibility, and full back focus are complete', async ({ page }) => {

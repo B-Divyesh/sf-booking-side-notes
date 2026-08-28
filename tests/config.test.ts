@@ -45,4 +45,9 @@ describe('static deployment contract', () => {
       expect(claim.sandbox).toMatch(/\?demo=1/);
     }
   });
+
+  it('does not ship the vague privacy eyebrow removed in polish round three', async () => {
+    const app = await readFile('src/main.ts', 'utf8');
+    expect(app).not.toContain('Private appointment companion');
+  });
 });

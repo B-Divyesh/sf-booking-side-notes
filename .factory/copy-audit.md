@@ -7,7 +7,6 @@ No sentence exceeds 22 words. No supplied banned marketing word appears.
 
 | Text | Words | Result |
 | --- | ---: | --- |
-| Private appointment companion | 3 | Plain context |
 | Keep side notes beside appointments | 5 | Job headline |
 | For small appointment businesses that need callbacks and access details without changing bookable time. | 14 | Audience and change |
 | Opens a sample day with appointments and side notes. | 9 | Action result |
